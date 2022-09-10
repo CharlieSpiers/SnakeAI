@@ -46,7 +46,7 @@ class Agent:
         self.train_long_memory()
 
         if score > self.record:
-            record = score
+            self.record = score
             self.model.save()
 
         print('Game', self.n_games, 'Score', score, 'Record:', self.record)

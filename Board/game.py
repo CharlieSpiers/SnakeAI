@@ -15,7 +15,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 5
 
 
 class SnakeGame:
@@ -43,7 +43,8 @@ class SnakeGame:
         self.food = None
         self.game_turns = 0
         self.head = Point(self.w / 2, self.h / 2)
-        self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0))]
+        self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0)),
+                      pt_add(self.head, (-3, 0))]
 
         self._place_food()
 
