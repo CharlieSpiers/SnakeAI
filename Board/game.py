@@ -1,6 +1,7 @@
+import numpy as np
 import pygame
 
-from MachineLearning.player import HumanPlayer, AIPlayer
+from MachineLearning.player import HumanPlayer, AIPlayer, Direction
 from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()
@@ -98,6 +99,34 @@ class SnakeGame:
         self.display.blit(text, [0, 0])
         pygame.display.flip()
 
+    def get_state(self):
+        dirs_clockwise = list(Direction)
+        current_direction = self.player.direction
+        curr_index = dirs_clockwise.index(current_direction)
+
+        state = [
+            # Danger straight
+            game._is_collision(pt_add(self.head, current_direction.value)),
+            # Danger right
+            game._is_collision(pt_add(self.head, dirs_clockwise[(curr_index+1) % 4].value)),
+            # Danger left
+            game._is_collision(pt_add(self.head, dirs_clockwise[(curr_index-1) % 4].value)),
+
+            # Move direction
+            current_direction == Direction.LEFT,
+            current_direction == Direction.RIGHT,
+            current_direction == Direction.UP,
+            current_direction == Direction.DOWN,
+
+            # Food location
+            self.food.x < self.head.x,  # food left
+            self.food.x > self.head.x,  # food right
+            self.food.y < self.head.y,  # food up
+            self.food.y > self.head.y  # food down
+        ]
+
+        return np.array(state, dtype=int)
+
 
 if __name__ == '__main__':
     game = SnakeGame()
@@ -105,7 +134,7 @@ if __name__ == '__main__':
     # game loop
     while True:
         reward, game_over, score = game.play_step()
-        game.player.send_feedback(reward, game.get_state())
+        game.player.send_feedback(reward, game.get_state(), game_over)
 
         if game_over:
             game.reset()
