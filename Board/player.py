@@ -1,5 +1,7 @@
 from enum import Enum
+import random
 
+import numpy as np
 import pygame
 
 from Board.point import Point
@@ -7,12 +9,15 @@ from Board.point import Point
 
 class Direction(Enum):
     RIGHT = Point(1, 0)
+    DOWN = Point(0, 1)
     LEFT = Point(-1, 0)
     UP = Point(0, -1)
-    DOWN = Point(0, 1)
 
 
 class Player:
+
+    def __init__(self):
+        self.direction = Direction.RIGHT
 
     def get_direction(self):
         pass
@@ -28,9 +33,6 @@ class Player:
 
 
 class HumanPlayer(Player):
-
-    def __init__(self):
-        self.direction = Direction.RIGHT
 
     def get_direction(self):
         input_found = False
@@ -49,3 +51,36 @@ class HumanPlayer(Player):
                 else:
                     input_found = False
         return self.direction
+
+
+class AIPlayer(Player):
+
+    def get_direction(self):
+        for event in pygame.event.get():
+            super().check_quit(event)
+
+        action = self.random_action()  # TODO: model.get_action
+        dirs_clockwise = list(Direction)
+        curr_index = dirs_clockwise.index(self.direction)
+
+        if np.array_equal(action, [1, 0, 0]):
+            return self.direction
+        elif np.array_equal(action, [0, 1, 0]):
+            self.direction = dirs_clockwise[(curr_index+1) % 4]
+            return self.direction
+        elif np.array_equal(action, [0, 0, 1]):
+            self.direction = dirs_clockwise[(curr_index-1) % 4]
+            return self.direction
+        else:
+            raise BadAIArrayError
+
+    @staticmethod
+    def random_action():
+        rnd_int = random.randint(0, 2)
+        action = [0, 0, 0]
+        action[rnd_int] = 1
+        return action
+
+
+class BadAIArrayError(Exception):
+    pass

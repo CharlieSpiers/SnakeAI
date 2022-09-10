@@ -1,6 +1,6 @@
 import pygame
 
-from Board.player import HumanPlayer
+from Board.player import HumanPlayer, AIPlayer
 from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()
@@ -18,7 +18,6 @@ SPEED = 20
 
 
 class SnakeGame:
-
     score = None
     food = None
     head = None
@@ -35,17 +34,17 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
 
         # init game state
-        self.player = HumanPlayer()
+        self.player = AIPlayer()
         self.reset()
 
     def reset(self):
         self.score = 0
         self.food = None
-        self._place_food()
         self.game_turns = 0
-
         self.head = Point(self.w / 2, self.h / 2)
         self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0))]
+
+        self._place_food()
 
     def _place_food(self):
         self.food = pt_random(self.w, self.h)
@@ -60,7 +59,7 @@ class SnakeGame:
 
         # 2. check if game over
         snake_reward = 0
-        if self._is_collision() or self.game_turns > 100*len(self.snake):
+        if self._is_collision() or self.game_turns > 1000*len(self.snake):
             snake_reward = -10
             return snake_reward, True, self.score
 
