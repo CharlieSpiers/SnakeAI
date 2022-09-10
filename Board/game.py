@@ -1,6 +1,6 @@
 import pygame
 
-from Board.player import HumanPlayer, AIPlayer
+from MachineLearning.player import HumanPlayer, AIPlayer
 from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()
@@ -13,7 +13,7 @@ BLUE1 = (0, 0, 255)
 BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
-BLOCK_SIZE = 10
+BLOCK_SIZE = 20
 SPEED = 20
 
 
@@ -24,7 +24,7 @@ class SnakeGame:
     snake = None
     game_turns = None
 
-    def __init__(self, w=32, h=32):
+    def __init__(self, w=32, h=32, player=HumanPlayer()):
         self.w = w
         self.h = h
 
@@ -34,7 +34,7 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
 
         # init game state
-        self.player = AIPlayer()
+        self.player = player
         self.reset()
 
     def reset(self):
@@ -105,11 +105,7 @@ if __name__ == '__main__':
     # game loop
     while True:
         reward, game_over, score = game.play_step()
-        game.player.send_feedback(reward)
+        game.player.send_feedback(reward, game.get_state())
 
         if game_over:
-            break
-
-    print('Final Score', score)
-
-    pygame.quit()
+            game.reset()

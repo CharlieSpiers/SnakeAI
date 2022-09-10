@@ -22,7 +22,7 @@ class Player:
     def get_direction(self):
         pass
 
-    def send_feedback(self, reward):
+    def send_feedback(self, reward, state):
         pass
 
     @staticmethod
