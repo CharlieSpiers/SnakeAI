@@ -1,22 +1,10 @@
 import pygame
-from enum import Enum
 
-import switch as switch
-
+from Board.player import HumanPlayer
 from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()
 font = pygame.font.Font('../arial.ttf', 25)
-
-
-# font = pygame.font.SysFont('arial', 25)
-
-class Direction(Enum):
-    RIGHT = Point(1, 0)
-    LEFT = Point(-1, 0)
-    UP = Point(0, -1)
-    DOWN = Point(0, 1)
-
 
 # rgb colors
 WHITE = (255, 255, 255)
@@ -40,7 +28,7 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
 
         # init game state
-        self.direction = Direction.RIGHT
+        self.player = HumanPlayer()
 
         self.head = Point(self.w / 2, self.h / 2)
         self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0))]
@@ -56,26 +44,10 @@ class SnakeGame:
 
     def play_step(self):
         # 1. collect user input
-        input_found = False
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if (event.type == pygame.KEYDOWN) & (not input_found):
-                input_found = True
-                if (event.key == pygame.K_LEFT) & (self.direction != Direction.RIGHT):
-                    self.direction = Direction.LEFT
-                elif (event.key == pygame.K_RIGHT) & (self.direction != Direction.LEFT):
-                    self.direction = Direction.RIGHT
-                elif (event.key == pygame.K_UP) & (self.direction != Direction.DOWN):
-                    self.direction = Direction.UP
-                elif (event.key == pygame.K_DOWN) & (self.direction != Direction.UP):
-                    self.direction = Direction.DOWN
-                else:
-                    input_found = False
+        direction = self.player.get_input()
 
         # 2. move
-        self.head = pt_add(self.head, self.direction.value)
+        self.head = pt_add(self.head, direction.value)
         self.snake.insert(0, self.head)
 
         # 3. check if game over
