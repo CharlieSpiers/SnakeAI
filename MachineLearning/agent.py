@@ -7,7 +7,7 @@ from MachineLearning.helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LR = 0.005
 
 
 class Agent:
@@ -18,10 +18,10 @@ class Agent:
         self.plot_mean_scores = []
         self.total_score = 0
         self.n_games = 0
-        self.epsilon = 0  # randomness
+        self.epsilon = 0.2  # randomness
         self.gamma = 0.9  # discount rate
         self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
-        self.model = Linear_QNet(11, 256, 3)
+        self.model = Linear_QNet(11, 20, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def remember(self, state, action, reward, next_state, done):
@@ -59,7 +59,7 @@ class Agent:
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.n_games
+        self.epsilon = 100 - self.n_games
         final_move = [0, 0, 0]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
@@ -67,6 +67,7 @@ class Agent:
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)
+            # print(prediction)
             move = torch.argmax(prediction).item()
             final_move[move] = 1
 

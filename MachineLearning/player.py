@@ -95,6 +95,7 @@ class AIPlayer(Player):
         self.ag.remember(self.old_state, self.last_action, reward, new_state, done)
         if done:
             self.ag.do_done(score)
+        self.old_state = new_state
 
 
 class BadAIArrayError(Exception):

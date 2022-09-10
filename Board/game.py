@@ -15,7 +15,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
-SPEED = 5
+SPEED = 50
 
 
 class SnakeGame:
@@ -68,7 +68,7 @@ class SnakeGame:
         # 3. place new food or just move
         if self.head == self.food:
             self.score += 1
-            snake_reward = 10
+            snake_reward = 20
             self._place_food()
         else:
             self.snake.pop()
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     # game loop
     while True:
         reward, game_over, score = game.play_step()
-        game.player.send_feedback(reward, game.get_state(), game_over, score)
-
+        new_state = game.get_state()
         if game_over:
             game.reset()
+        game.player.send_feedback(reward, new_state, game_over, score)
