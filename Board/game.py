@@ -127,14 +127,20 @@ class SnakeGame:
 
         return np.array(state, dtype=int)
 
+    def set_player(self, player):
+        self.player = player
+
 
 if __name__ == '__main__':
     game = SnakeGame()
 
+    # To play yourself, just comment out this one line
+    game.set_player(AIPlayer(game.get_state()))
+
     # game loop
     while True:
         reward, game_over, score = game.play_step()
-        game.player.send_feedback(reward, game.get_state(), game_over)
+        game.player.send_feedback(reward, game.get_state(), game_over, score)
 
         if game_over:
             game.reset()

@@ -5,6 +5,7 @@ import numpy as np
 import pygame
 
 from Board.point import Point
+import MachineLearning.agent as agent
 
 
 class Direction(Enum):
@@ -22,7 +23,7 @@ class Player:
     def get_direction(self):
         pass
 
-    def send_feedback(self, reward, state, done):
+    def send_feedback(self, reward, state, done, score):
         pass
 
     @staticmethod
@@ -55,20 +56,28 @@ class HumanPlayer(Player):
 
 class AIPlayer(Player):
 
+    ag = None
+
+    def __init__(self, state):
+        super().__init__()
+        self.ag = agent.Agent()
+        self.old_state = state
+        self.last_action = None
+
     def get_direction(self):
         for event in pygame.event.get():
             super().check_quit(event)
 
-        action = self.random_action()  # TODO: model.get_action
+        self.last_action = self.ag.get_action(self.old_state)
         dirs_clockwise = list(Direction)
         curr_index = dirs_clockwise.index(self.direction)
 
-        if np.array_equal(action, [1, 0, 0]):
+        if np.array_equal(self.last_action, [1, 0, 0]):
             return self.direction
-        elif np.array_equal(action, [0, 1, 0]):
+        elif np.array_equal(self.last_action, [0, 1, 0]):
             self.direction = dirs_clockwise[(curr_index+1) % 4]
             return self.direction
-        elif np.array_equal(action, [0, 0, 1]):
+        elif np.array_equal(self.last_action, [0, 0, 1]):
             self.direction = dirs_clockwise[(curr_index-1) % 4]
             return self.direction
         else:
@@ -80,6 +89,12 @@ class AIPlayer(Player):
         action = [0, 0, 0]
         action[rnd_int] = 1
         return action
+
+    def send_feedback(self, reward, new_state, done, score):
+        self.ag.train_short_memory(self.old_state, self.last_action, reward, new_state, done)
+        self.ag.remember(self.old_state, self.last_action, reward, new_state, done)
+        if done:
+            self.ag.do_done(score)
 
 
 class BadAIArrayError(Exception):
