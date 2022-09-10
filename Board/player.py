@@ -14,7 +14,10 @@ class Direction(Enum):
 
 class Player:
 
-    def get_input(self):
+    def get_direction(self):
+        pass
+
+    def send_feedback(self, reward):
         pass
 
     @staticmethod
@@ -29,7 +32,7 @@ class HumanPlayer(Player):
     def __init__(self):
         self.direction = Direction.RIGHT
 
-    def get_input(self):
+    def get_direction(self):
         input_found = False
         for event in pygame.event.get():
             super().check_quit(event)

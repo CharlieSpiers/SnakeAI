@@ -19,9 +19,16 @@ SPEED = 20
 
 class SnakeGame:
 
+    score = None
+    food = None
+    head = None
+    snake = None
+    game_turns = None
+
     def __init__(self, w=32, h=32):
         self.w = w
         self.h = h
+
         # init display
         self.display = pygame.display.set_mode((self.w * BLOCK_SIZE, self.h * BLOCK_SIZE))
         pygame.display.set_caption('Snake')
@@ -29,13 +36,16 @@ class SnakeGame:
 
         # init game state
         self.player = HumanPlayer()
+        self.reset()
 
-        self.head = Point(self.w / 2, self.h / 2)
-        self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0))]
-
+    def reset(self):
         self.score = 0
         self.food = None
         self._place_food()
+        self.game_turns = 0
+
+        self.head = Point(self.w / 2, self.h / 2)
+        self.snake = [self.head, pt_add(self.head, (-1, 0)), pt_add(self.head, (-2, 0))]
 
     def _place_food(self):
         self.food = pt_random(self.w, self.h)
@@ -43,36 +53,37 @@ class SnakeGame:
             self._place_food()
 
     def play_step(self):
-        # 1. collect user input
-        direction = self.player.get_input()
-
-        # 2. move
-        self.head = pt_add(self.head, direction.value)
+        # 1. collect user input and move
+        self.game_turns += 1
+        self.head = pt_add(self.head, self.player.get_direction().value)
         self.snake.insert(0, self.head)
 
-        # 3. check if game over
-        if self._is_collision():
-            return True, self.score
+        # 2. check if game over
+        snake_reward = 0
+        if self._is_collision() or self.game_turns > 100*len(self.snake):
+            snake_reward = -10
+            return snake_reward, True, self.score
 
-        # 4. place new food or just move
+        # 3. place new food or just move
         if self.head == self.food:
             self.score += 1
+            snake_reward = 10
             self._place_food()
         else:
             self.snake.pop()
 
-        # 5. update ui and clock
+        # 4. update ui and clock
         self._update_ui()
         self.clock.tick(SPEED)
 
-        # 6. return game over and score
-        return False, self.score
+        # 5. return game over and score
+        return snake_reward, False, self.score
 
     def _is_collision(self, pt=None):
         if not pt:
             pt = self.head
         # Check if in bounds and not inside itself
-        return pt_not_in_bounds(self.w, self.h, pt) or self.head in self.snake[1:]
+        return pt_not_in_bounds(self.w, self.h, pt) or pt in self.snake[1:]
 
     def _update_ui(self):
         self.display.fill(BLACK)
@@ -94,7 +105,8 @@ if __name__ == '__main__':
 
     # game loop
     while True:
-        game_over, score = game.play_step()
+        reward, game_over, score = game.play_step()
+        game.player.send_feedback(reward)
 
         if game_over:
             break
