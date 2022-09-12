@@ -114,14 +114,14 @@ class SnakeGame:
             game._is_collision(pt_add(self.head, dirs_clockwise[(curr_index-1) % 4].value)),
 
             # Move direction
-            current_direction == Direction.LEFT,
             current_direction == Direction.RIGHT,
+            current_direction == Direction.LEFT,
             current_direction == Direction.UP,
             current_direction == Direction.DOWN,
 
             # Food location
-            self.food.x < self.head.x,  # food left
             self.food.x > self.head.x,  # food right
+            self.food.x < self.head.x,  # food left
             self.food.y < self.head.y,  # food up
             self.food.y > self.head.y  # food down
         ]
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     # game loop
     while True:
         reward, game_over, score = game.play_step()
-        new_state = game.get_state()
+
         if game_over:
+            game.player.send_feedback(reward, game_over, score)
             game.reset()
-        game.player.send_feedback(reward, new_state, game_over, score)

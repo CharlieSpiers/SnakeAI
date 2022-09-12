@@ -1,11 +1,10 @@
 from enum import Enum
-import random
 
 import numpy as np
 import pygame
 
 from Board.point import Point
-import MachineLearning.agent as agent
+from MachineLearning.graph_visualiser import Snake_genetic_net
 
 
 class Direction(Enum):
@@ -20,7 +19,7 @@ class Player:
     def __init__(self):
         self.direction = Direction.RIGHT
 
-    def get_direction(self):
+    def get_direction(self, state=None):
         pass
 
     def send_feedback(self, reward, state, done, score):
@@ -35,7 +34,7 @@ class Player:
 
 class HumanPlayer(Player):
 
-    def get_direction(self):
+    def get_direction(self, state=None):
         input_found = False
         for event in pygame.event.get():
             super().check_quit(event)
@@ -55,48 +54,45 @@ class HumanPlayer(Player):
 
 
 class AIPlayer(Player):
-
-    ag = None
+    ai = None
 
     def __init__(self, state):
         super().__init__()
-        self.ag = agent.Agent()
-        self.old_state = state
-        self.last_action = None
+        self.ai = Snake_genetic_net()
 
-    def get_direction(self):
+    def get_direction(self, state=None):
+        if state is None:
+            raise BadStateError
+
         for event in pygame.event.get():
             super().check_quit(event)
 
-        self.last_action = self.ag.get_action(self.old_state)
+        action = self.ai.get_action(state)
         dirs_clockwise = list(Direction)
         curr_index = dirs_clockwise.index(self.direction)
 
-        if np.array_equal(self.last_action, [1, 0, 0]):
+        if np.array_equal(action, [1, 0, 0]):
             return self.direction
-        elif np.array_equal(self.last_action, [0, 1, 0]):
-            self.direction = dirs_clockwise[(curr_index+1) % 4]
+        elif np.array_equal(action, [0, 1, 0]):
+            self.direction = dirs_clockwise[(curr_index + 1) % 4]
             return self.direction
-        elif np.array_equal(self.last_action, [0, 0, 1]):
-            self.direction = dirs_clockwise[(curr_index-1) % 4]
+        elif np.array_equal(action, [0, 0, 1]):
+            self.direction = dirs_clockwise[(curr_index - 1) % 4]
             return self.direction
         else:
             raise BadAIArrayError
 
-    @staticmethod
-    def random_action():
-        rnd_int = random.randint(0, 2)
-        action = [0, 0, 0]
-        action[rnd_int] = 1
-        return action
-
-    def send_feedback(self, reward, new_state, done, score):
-        self.ag.train_short_memory(self.old_state, self.last_action, reward, new_state, done)
-        self.ag.remember(self.old_state, self.last_action, reward, new_state, done)
-        if done:
-            self.ag.do_done(score)
-        self.old_state = new_state
+    # def send_feedback(self, reward, new_state, done, score):
+    #     self.ag.train_short_memory(self.old_state, self.last_action, reward, new_state, done)
+    #     self.ag.remember(self.old_state, self.last_action, reward, new_state, done)
+    #     if done:
+    #         self.ag.do_done(score)
+    #     self.old_state = new_state
 
 
 class BadAIArrayError(Exception):
+    pass
+
+
+class BadStateError(Exception):
     pass
