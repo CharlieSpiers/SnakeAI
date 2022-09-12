@@ -1,8 +1,8 @@
 import numpy as np
 import pygame
 
-from players.player import HumanPlayer, AIPlayer, Direction
-from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
+from players.player import HumanPlayer, AIPlayer
+from game_logic.point import Point, Direction, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()
 font = pygame.font.Font('../arial.ttf', 25)
@@ -16,6 +16,7 @@ BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
 SPEED = 50
+GAME_TURNS = 1000
 
 
 class SnakeGame:
@@ -61,7 +62,7 @@ class SnakeGame:
 
         # 2. check if game over
         snake_reward = 0
-        if self._is_collision() or self.game_turns > 1000*len(self.snake):
+        if self._is_collision() or self.game_turns > GAME_TURNS:
             snake_reward = -10
             return snake_reward, True, self.score
 
@@ -136,12 +137,12 @@ if __name__ == '__main__':
     game = SnakeGame()
 
     # To play yourself, just comment out this one line
-    game.set_player(AIPlayer(game.get_state()))
+    game.set_player(AIPlayer())
 
     # game loop
     while True:
         reward, game_over, score = game.play_step()
 
         if game_over:
-            game.player.send_feedback(reward, game_over, score)
+            game.player.send_feedback(score)
             game.reset()

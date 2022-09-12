@@ -1,10 +1,19 @@
 from collections import namedtuple
 import random
+from enum import Enum
 
 import pygame
 
 # pure
 Point = namedtuple('point', 'x, y')
+
+
+# Directions as vector points
+class Direction(Enum):
+    RIGHT = Point(1, 0)
+    DOWN = Point(0, 1)
+    LEFT = Point(-1, 0)
+    UP = Point(0, -1)
 
 
 # pure

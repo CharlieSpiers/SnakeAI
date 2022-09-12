@@ -1,17 +1,8 @@
-from enum import Enum
-
 import numpy as np
 import pygame
 
-from Board.point import Point
-from visualisations.neural_graph_visualiser import Snake_genetic_net
-
-
-class Direction(Enum):
-    RIGHT = Point(1, 0)
-    DOWN = Point(0, 1)
-    LEFT = Point(-1, 0)
-    UP = Point(0, -1)
+from players.genetic_algorithm import Snake_genetic_net
+from game_logic.point import Direction
 
 
 class Player:
@@ -22,7 +13,7 @@ class Player:
     def get_direction(self, state=None):
         pass
 
-    def send_feedback(self, reward, state, done, score):
+    def send_feedback(self, score):
         pass
 
     @staticmethod
@@ -56,7 +47,7 @@ class HumanPlayer(Player):
 class AIPlayer(Player):
     ai = None
 
-    def __init__(self, state):
+    def __init__(self):
         super().__init__()
         self.ai = Snake_genetic_net()
 
@@ -82,12 +73,8 @@ class AIPlayer(Player):
         else:
             raise BadAIArrayError
 
-    # def send_feedback(self, reward, new_state, done, score):
-    #     self.ag.train_short_memory(self.old_state, self.last_action, reward, new_state, done)
-    #     self.ag.remember(self.old_state, self.last_action, reward, new_state, done)
-    #     if done:
-    #         self.ag.do_done(score)
-    #     self.old_state = new_state
+    def send_feedback(self, score):
+        self.ai.send_feedback(score)
 
 
 class BadAIArrayError(Exception):
