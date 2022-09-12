@@ -47,7 +47,7 @@ class Snake_genetic_net:
                 g.add_edge(edge[0], edge[1], value=abs(edge[2])*0.5, title=edge[2], color=RED)
             else:
                 g.add_edge(edge[0], edge[1], value=abs(edge[2]*0.5), title=edge[2], color=GREEN)
-        g.show('test.html')
+        g.show('graphs/test.html')
 
 
 if __name__ == '__main__':

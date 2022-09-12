@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from MachineLearning.player import HumanPlayer, AIPlayer, Direction
+from players.player import HumanPlayer, AIPlayer, Direction
 from Board.point import Point, pt_add, pt_random, pt_rect, pt_not_in_bounds
 
 pygame.init()

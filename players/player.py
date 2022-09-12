@@ -4,7 +4,7 @@ import numpy as np
 import pygame
 
 from Board.point import Point
-from MachineLearning.graph_visualiser import Snake_genetic_net
+from visualisations.neural_graph_visualiser import Snake_genetic_net
 
 
 class Direction(Enum):
