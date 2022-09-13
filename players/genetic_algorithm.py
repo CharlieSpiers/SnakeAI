@@ -24,11 +24,11 @@ class Snake_genetic_net:
     def get_random_weights(self):
         weights = None
         weights = []
-        for i in range(1, 10):
-            for j in range(14, 17):
+        for i in range(1, 8):
+            for j in range(16, 19):
                 weights.append((i, j, rnd.uniform(-1, 1)))
-        for i in range(10, 15):
-            for j in range(8, 10):
+        for i in range(8, 16):
+            for j in range(4, 8):
                 weights.append((i, j, rnd.uniform(-1, 1)))
         return weights
 

@@ -14,26 +14,28 @@ BLUE = '#00009f'
 class Snake_net_visualiser:
     # 1-11 are input nodes, 12-13 are hidden nodes for the direction of the food, 14-16 are output nodes
     # Format: n_id, label, color, x, y
-    nodes = [(1, 'coll_ahead', BLUE, 100, 50),
-             (2, 'coll_right', BLUE, 200, 50),
-             (3, 'coll_left', BLUE, 300, 50),
+    nodes = [(1, 'coll_ahead', BLUE, 300, 50),
+             (2, 'coll_right', BLUE, 400, 50),
+             (3, 'coll_left', BLUE, 500, 50),
 
-             (4, 'dir_r', BLUE, 400, 50),
-             (5, 'dir_l', BLUE, 500, 50),
-             (6, 'dir_u', BLUE, 600, 50),
-             (7, 'dir_d', BLUE, 700, 50),
+             (4, 'hidden_1', GREEN, 250, 250),
+             (5, 'hidden_2', GREEN, 350, 250),
+             (6, 'hidden_3', GREEN, 450, 250),
+             (7, 'hidden_4', GREEN, 550, 250),
 
-             (8, 'hidden_1', GREEN, 300, 350),
-             (9, 'hidden_2', GREEN, 500, 350),
+             (8, 'dir_r', BLUE, 50, 450),
+             (9, 'dir_l', BLUE, 150, 450),
+             (10, 'dir_u', BLUE, 250, 450),
+             (11, 'dir_d', BLUE, 350, 450),
 
-             (10, 'food_r', BLUE, 100, 450),
-             (11, 'food_l', BLUE, 300, 450),
-             (12, 'food_u', BLUE, 500, 450),
-             (13, 'food_d', BLUE, 700, 450),
+             (12, 'food_r', BLUE, 450, 450),
+             (13, 'food_l', BLUE, 550, 450),
+             (14, 'food_u', BLUE, 650, 450),
+             (15, 'food_d', BLUE, 750, 450),
 
-             (14, 'out_ahead', RED, 300, 250),
-             (15, 'out_right', RED, 400, 250),
-             (16, 'out_left', RED, 500, 250)]
+             (16, 'out_ahead', RED, 300, 150),
+             (17, 'out_right', RED, 400, 150),
+             (18, 'out_left', RED, 500, 150)]
 
     def __init__(self, edges=None):
         self.edges = edges
