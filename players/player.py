@@ -53,7 +53,7 @@ class AIPlayer(Player):
 
     def get_direction(self, state=None):
         if state is None:
-            raise BadStateError
+            raise BadStateException
 
         for event in pygame.event.get():
             super().check_quit(event)
@@ -71,15 +71,15 @@ class AIPlayer(Player):
             self.direction = dirs_clockwise[(curr_index - 1) % 4]
             return self.direction
         else:
-            raise BadAIArrayError
+            raise BadAIArrayException
 
     def send_feedback(self, score):
         self.ai.send_feedback(score)
 
 
-class BadAIArrayError(Exception):
+class BadAIArrayException(Exception):
     pass
 
 
-class BadStateError(Exception):
+class BadStateException(Exception):
     pass
