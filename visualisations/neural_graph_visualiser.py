@@ -1,9 +1,8 @@
-import time
-
 from pyvis.network import Network
-from players.genetic_algorithm import Snake_genetic_net
+import selenium.common.exceptions
 from selenium import webdriver
-from visualisations import path_to_chromium as path
+
+from visualisations import paths
 
 Graph = None
 
@@ -39,7 +38,7 @@ class Snake_net_visualiser:
     def __init__(self, edges=None):
         self.edges = edges
         self.graph = None
-        self.driver = webdriver.Chrome(path.Path_to_chromium)
+        self.driver = webdriver.Chrome(executable_path=paths.Path_to_chromium)
         self.driver.maximize_window()
         if edges is not None:
             self.show_graph()
@@ -54,8 +53,8 @@ class Snake_net_visualiser:
                 self.graph.add_edge(edge[0], edge[1], value=abs(edge[2]) * 0.5, title=edge[2], color=RED)
             else:
                 self.graph.add_edge(edge[0], edge[1], value=abs(edge[2] * 0.5), title=edge[2], color=GREEN)
-        self.graph.write_html('test.html')
-        self.driver.get('C:/Users/charl/PycharmProjects/SnakeAI/visualisations/test.html')
+        self.graph.write_html(paths.Path_to_html)
+        self.driver.get(paths.Path_to_html)
 
     def set_edges(self, edges):
         self.edges = edges
@@ -67,13 +66,9 @@ class Snake_net_visualiser:
                 edge['color'] = RED
             else:
                 edge['color'] = GREEN
-        self.graph.write_html('test.html')
-        self.driver.refresh()
-
-
-if __name__ == '__main__':
-    gen_map = Snake_genetic_net()
-    vis = Snake_net_visualiser(gen_map.get_random_weights())
-    while True:
-        time.sleep(3)
-        vis.set_edges(gen_map.get_random_weights())
+        self.graph.write_html(paths.Path_to_html)
+        try:
+            self.driver.refresh()
+        except selenium.common.exceptions.WebDriverException:
+            print("There was an exception reaching chrome, it was likely closed")
+            quit(1)

@@ -129,5 +129,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/visualisations/path_to_chromium.py
+
+# Manual additions
+/visualisations/paths.py
 /visualisations/test.html
