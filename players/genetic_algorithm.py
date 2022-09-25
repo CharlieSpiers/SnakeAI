@@ -20,10 +20,11 @@ class Snake_genetic_net:
 
         print(self.edges)
         self.visualiser = Snake_net_visualiser()
-        pass
+        self.visualiser.set_edges(self.edges[0])
 
     def get_action(self, state):
-        pass
+        output_indexes = [15, 16, 17]
+
 
     def send_feedback(self, score):
         pass
@@ -34,7 +35,7 @@ class Snake_genetic_net:
             parsed_edges = parse_edges_from_file(self.file_path)
             edge_array = parsed_edges[0:10]
         except ParserException:
-            print("There was a exception parsing the file, resorting to random edge weights")
+            print("There was a exception parsing the file, using random weights")
         except EmptyEdgeListException:
             print("There were no edges in the file, using random weights")
         finally:
@@ -45,11 +46,11 @@ class Snake_genetic_net:
     @staticmethod
     def get_random_weights():
         weights = []
-        for i in range(1, 8):
+        for i in range(1, 4) and range(12, 16):
             for j in range(16, 19):
                 weights.append((i, j, rnd.uniform(-1, 1)))
-        for i in range(8, 16):
-            for j in range(4, 8):
+        for i in range(4, 12):
+            for j in range(12, 16):
                 weights.append((i, j, rnd.uniform(-1, 1)))
         return weights
 
