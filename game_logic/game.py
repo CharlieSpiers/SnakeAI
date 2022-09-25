@@ -18,9 +18,13 @@ BLOCK_SIZE = 20
 SPEED = 50
 GAME_TURNS = 1000
 
+AI_TURN_REWARD = 1
+AI_FOOD_REWARD = 200
+AI_DEATH_REWARD = -100
+
 
 class SnakeGame:
-    score = None
+    food_score = None
     food = None
     head = None
     snake = None
@@ -40,7 +44,7 @@ class SnakeGame:
         self.reset()
 
     def reset(self):
-        self.score = 0
+        self.food_score = 0
         self.food = None
         self.game_turns = 0
         self.head = Point(self.w / 2, self.h / 2)
@@ -61,15 +65,15 @@ class SnakeGame:
         self.snake.insert(0, self.head)
 
         # 2. check if game over
-        snake_reward = 0
+        snake_reward = AI_TURN_REWARD
         if self._is_collision() or self.game_turns > GAME_TURNS:
-            snake_reward = -10
-            return snake_reward, True, self.score
+            snake_reward = AI_DEATH_REWARD
+            return snake_reward, True, self.food_score
 
         # 3. place new food or just move
         if self.head == self.food:
-            self.score += 1
-            snake_reward = 20
+            self.food_score += 1
+            snake_reward = AI_FOOD_REWARD
             self._place_food()
         else:
             self.snake.pop()
@@ -79,7 +83,7 @@ class SnakeGame:
         self.clock.tick(SPEED)
 
         # 5. return game over and score
-        return snake_reward, False, self.score
+        return snake_reward, False, self.food_score
 
     def _is_collision(self, pt=None):
         if not pt:
@@ -97,7 +101,7 @@ class SnakeGame:
 
         pygame.draw.rect(self.display, RED, pt_rect(BLOCK_SIZE, self.food)[0])
 
-        text = font.render("Score: " + str(self.score), True, WHITE)
+        text = font.render("Score: " + str(self.food_score), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
 
@@ -141,8 +145,11 @@ if __name__ == '__main__':
 
     # game loop
     while True:
-        reward, game_over, score = game.play_step()
+        total_reward = 0
+        game_over = False
+        while not game_over:
+            reward, game_over, score = game.play_step()
+            total_reward += reward
 
-        if game_over:
-            game.player.send_feedback(score)
-            game.reset()
+        game.player.send_feedback(total_reward)
+        game.reset()
