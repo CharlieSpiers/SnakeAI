@@ -73,4 +73,5 @@ class Snake_net_visualiser:
             self.driver.refresh()
         except selenium.common.exceptions.WebDriverException:
             print("There was an exception reaching chrome, it was likely closed")
+            self.driver.quit()
             quit(1)

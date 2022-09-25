@@ -57,7 +57,7 @@ class SnakeGame:
     def play_step(self):
         # 1. collect user input and move
         self.game_turns += 1
-        self.head = pt_add(self.head, self.player.get_direction().value)
+        self.head = pt_add(self.head, self.player.get_direction(self.get_state()).value)
         self.snake.insert(0, self.head)
 
         # 2. check if game over

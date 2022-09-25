@@ -1,7 +1,8 @@
 import numpy as np
 import pygame
 
-from players.genetic_algorithm import Snake_genetic_net
+from players.ai_generation_handler import AI_generation_handler
+from players.genetic_algorithm import BadStateException
 from game_logic.point import Direction
 
 
@@ -49,11 +50,11 @@ class AIPlayer(Player):
 
     def __init__(self):
         super().__init__()
-        self.ai = Snake_genetic_net()
+        self.ai = AI_generation_handler()
 
     def get_direction(self, state=None):
         if state is None:
-            raise BadStateException
+            raise BadStateException("State was None")
 
         for event in pygame.event.get():
             super().check_quit(event)
@@ -71,15 +72,11 @@ class AIPlayer(Player):
             self.direction = dirs_clockwise[(curr_index - 1) % 4]
             return self.direction
         else:
-            raise BadAIArrayException
+            raise BadAIArrayException("Was not any of the valid options")
 
     def send_feedback(self, score):
         self.ai.send_feedback(score)
 
 
 class BadAIArrayException(Exception):
-    pass
-
-
-class BadStateException(Exception):
     pass
