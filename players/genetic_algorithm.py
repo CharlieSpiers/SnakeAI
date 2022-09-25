@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 
@@ -40,6 +42,14 @@ class Snake_genetic_net:
 
     def update_visualisations(self, visualiser):
         visualiser.set_edges(self.edges)
+
+    def generate_new_snake(self, max_variance=None):
+        new_edges = []
+        for start, end, weight in self.edges:
+            weight_difference = round(max_variance * random.uniform(-1, 1), 3)
+            new_edges.append((start, end, weight + weight_difference))#
+        np.clip(new_edges, -1, 1)
+        return Snake_genetic_net(new_edges, self.input_nodes, self.hidden_nodes, self.output_nodes)
 
 
 class BadStateException(Exception):

@@ -16,7 +16,7 @@ BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
 SPEED = 50
-GAME_TURNS = 1000
+GAME_TURNS = 400
 
 AI_TURN_REWARD = 1
 AI_FOOD_REWARD = 200
@@ -30,7 +30,7 @@ class SnakeGame:
     snake = None
     game_turns = None
 
-    def __init__(self, w=32, h=32, player=HumanPlayer()):
+    def __init__(self, w=28, h=28, player=HumanPlayer()):
         self.w = w
         self.h = h
 

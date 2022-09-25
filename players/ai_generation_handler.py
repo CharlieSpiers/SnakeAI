@@ -6,10 +6,10 @@ from visualisations.neural_graph_visualiser import Snake_net_visualiser
 from visualisations.paths import Default_network_file_path as Default_path
 
 SNAKES_PER_GENERATION = 10
-SNAKES_ON_LOWER_VARIANCE = 7
+SNAKES_ON_HIGHER_VARIANCE = 4
 # bounds for how much the snake's network weights can change
-LOWER_MUTATION_VARIANCE = 0.05
-HIGHER_MUTATION_VARIANCE = 0.20
+LOWER_MUTATION_VARIANCE_MAX = 0.2
+HIGHER_MUTATION_VARIANCE_MAX = 0.5
 
 
 class AI_generation_handler:
@@ -20,6 +20,8 @@ class AI_generation_handler:
         self.current_snake_index = 0
         self.completed_snakes = []
         self.visualiser = Snake_net_visualiser(self.get_random_weights())
+        self.high_score = 0
+        self.last_average_score = 0
 
         self.snakes = []
         for edge in self.get_edges_list():
@@ -31,11 +33,14 @@ class AI_generation_handler:
     def send_feedback(self, score):
         self.completed_snakes.append((self.current_snake_index, score))
         self.current_snake_index += 1
-        if self.current_snake_index == SNAKES_PER_GENERATION:
-            print(self.completed_snakes)
-            quit(0)
-        else:
+
+        if self.current_snake_index != SNAKES_PER_GENERATION:
             self.snakes[self.current_snake_index].update_visualisations(self.visualiser)
+        else:  # End of generation
+            self.completed_snakes.sort(key=lambda x: x[1])
+            self.completed_snakes.reverse()
+            self.update_view_scores()
+            self.create_new_generation()
 
     def get_edges_list(self):
         edge_array = []
@@ -50,6 +55,32 @@ class AI_generation_handler:
             for i in range(SNAKES_PER_GENERATION - len(edge_array)):
                 edge_array.append(self.get_random_weights())
             return edge_array
+
+    def update_view_scores(self):
+        print(self.completed_snakes)
+        gen_high_score = self.completed_snakes[0][1]
+        if gen_high_score > self.high_score:
+            self.high_score = gen_high_score
+
+        gen_average_score = sum(x for (_, x) in self.completed_snakes)/SNAKES_PER_GENERATION
+        self.visualiser.update_scores(self.high_score, self.last_average_score, gen_average_score)
+        self.last_average_score = gen_average_score
+
+    def create_new_generation(self):
+        first_snake = self.snakes[self.completed_snakes[0][0]]
+        second_snake = self.snakes[self.completed_snakes[1][0]]
+
+        self.current_snake_index = 0
+        self.completed_snakes = []
+        self.snakes = []
+
+        for i in range(0, int((SNAKES_PER_GENERATION-SNAKES_ON_HIGHER_VARIANCE)/2)):
+            self.snakes.append(first_snake.generate_new_snake(LOWER_MUTATION_VARIANCE_MAX))
+            self.snakes.append(second_snake.generate_new_snake(LOWER_MUTATION_VARIANCE_MAX))
+
+        for i in range(0, int(SNAKES_ON_HIGHER_VARIANCE/2)):
+            self.snakes.append(first_snake.generate_new_snake(HIGHER_MUTATION_VARIANCE_MAX))
+            self.snakes.append(second_snake.generate_new_snake(HIGHER_MUTATION_VARIANCE_MAX))
 
     @staticmethod
     def get_random_weights():

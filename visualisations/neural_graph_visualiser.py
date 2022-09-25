@@ -1,6 +1,7 @@
 from pyvis.network import Network
 import selenium.common.exceptions
 from selenium import webdriver
+import bs4
 
 from visualisations import paths
 
@@ -38,6 +39,11 @@ class Snake_net_visualiser:
              (17, 'out_left', RED, 500, 150)]
 
     def __init__(self, edges=None):
+        self.high_score = 0
+        self.average_score = 0
+        self.last_average_score = 0
+        self.generation = 0
+
         self.edges = edges
         self.graph = None
         self.driver = webdriver.Chrome(executable_path=paths.Path_to_chromium)
@@ -55,8 +61,7 @@ class Snake_net_visualiser:
                 self.graph.add_edge(edge[0], edge[1], value=abs(edge[2]) * 0.5, title=edge[2], color=RED)
             else:
                 self.graph.add_edge(edge[0], edge[1], value=abs(edge[2] * 0.5), title=edge[2], color=GREEN)
-        self.graph.write_html(paths.Path_to_html)
-        self.driver.get(paths.Path_to_html)
+        self.write_html(first_load=True)
 
     def set_edges(self, edges):
         self.edges = edges
@@ -68,9 +73,35 @@ class Snake_net_visualiser:
                 edge['color'] = RED
             else:
                 edge['color'] = GREEN
-        self.graph.write_html(paths.Path_to_html)
+        self.write_html()
+
+    def update_scores(self, high_score, last_average_score, average_score):
+        self.high_score = high_score
+        self.last_average_score = last_average_score
+        self.average_score = average_score
+        self.generation += 1
+
+    def write_html(self, first_load=False):
+        # https://stackoverflow.com/questions/35355225/edit-and-create-html-file-using-python
+        soup = bs4.BeautifulSoup(self.graph.generate_html(), features="html.parser")
+
+        new_text = soup.new_tag('div', **{"style": "font-size: xx-large"})
+        contents = soup.new_tag('p', **{"style": "white-space: pre-line"})
+        contents.append(f'Generation number: {self.generation}\n'
+                        f'High score: {self.high_score}\n'
+                        f'Last gen average score: {self.last_average_score}\n'
+                        f'Ths gen average score: {self.average_score}')
+        new_text.append(contents)
+        soup.body.append(new_text)
+
+        with open(paths.Path_to_html, "w") as file_out:
+            file_out.write(str(soup))
+
         try:
-            self.driver.refresh()
+            if first_load:
+                self.driver.get(paths.Path_to_html)
+            else:
+                self.driver.refresh()
         except selenium.common.exceptions.WebDriverException:
             print("There was an exception reaching chrome, it was likely closed")
             self.driver.quit()
