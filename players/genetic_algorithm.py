@@ -10,9 +10,9 @@ class Snake_genetic_net:
             raise BadEdgeException("Neural net was None")
 
         if (input_nodes is None) or (hidden_nodes is None) or (output_nodes is None):
-            input_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            hidden_nodes = [11, 12, 13, 14]
-            output_nodes = [15, 16, 17]
+            input_nodes = list(range(0, 11))
+            hidden_nodes = list(range(11, 19))
+            output_nodes = list(range(19, 22))
 
         # There should be some tests for if these are suitable if you want to expand this to use any network
         # E.g. input_nodes = [0..a], hidden = [b..c], output = [d..e], a+1 = b, c+1 = d, e-d = 2
@@ -46,8 +46,9 @@ class Snake_genetic_net:
     def generate_new_snake(self, max_variance=None):
         new_edges = []
         for start, end, weight in self.edges:
-            weight_difference = round(max_variance * random.uniform(-1, 1), 3)
-            new_edges.append((start, end, weight + weight_difference))#
+            weight_difference = max_variance * random.uniform(-1, 1)
+            round(weight_difference, 3)
+            new_edges.append((start, end, weight + weight_difference))
         np.clip(new_edges, -1, 1)
         return Snake_genetic_net(new_edges, self.input_nodes, self.hidden_nodes, self.output_nodes)
 

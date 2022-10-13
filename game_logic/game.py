@@ -15,8 +15,9 @@ BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
-SPEED = 50
-GAME_TURNS = 400
+SPEED = 200
+GAME_TURNS = 100
+ADDITIONAL_TURNS_PER_FOOD = 20
 
 AI_TURN_REWARD = 1
 AI_FOOD_REWARD = 200
@@ -66,7 +67,7 @@ class SnakeGame:
 
         # 2. check if game over
         snake_reward = AI_TURN_REWARD
-        if self._is_collision() or self.game_turns > GAME_TURNS:
+        if self._is_collision() or self.game_turns > (GAME_TURNS + ADDITIONAL_TURNS_PER_FOOD * self.food_score):
             snake_reward = AI_DEATH_REWARD
             return snake_reward, True, self.food_score
 

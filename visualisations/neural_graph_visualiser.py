@@ -15,28 +15,31 @@ BLUE = '#00009f'
 class Snake_net_visualiser:
     # 1-11 are input nodes, 12-13 are hidden nodes for the direction of the food, 14-16 are output nodes
     # Format: n_id, label, color, x, y
-    nodes = [(0, 'coll_ahead', BLUE, 300, 50),
-             (1, 'coll_right', BLUE, 400, 50),
-             (2, 'coll_left', BLUE, 500, 50),
+    nodes = [(0, 'coll_ahead', BLUE, 50, 50),
+             (1, 'coll_right', BLUE, 50, 150),
+             (2, 'coll_left', BLUE, 50, 250),
 
-             (3, 'dir_r', BLUE, 50, 450),
-             (4, 'dir_l', BLUE, 150, 450),
-             (5, 'dir_u', BLUE, 250, 450),
-             (6, 'dir_d', BLUE, 350, 450),
+             (3, 'dir_r', BLUE, 50, 350),
+             (4, 'dir_l', BLUE, 50, 450),
+             (5, 'dir_u', BLUE, 50, 550),
+             (6, 'dir_d', BLUE, 50, 650),
+             (7, 'food_r', BLUE, 50, 750),
+             (8, 'food_l', BLUE, 50, 850),
+             (9, 'food_u', BLUE, 50, 950),
+             (10, 'food_d', BLUE, 50, 1050),
 
-             (7, 'food_r', BLUE, 450, 450),
-             (8, 'food_l', BLUE, 550, 450),
-             (9, 'food_u', BLUE, 650, 450),
-             (10, 'food_d', BLUE, 750, 450),
+             (11, 'hidden_1', GREEN, 250, 200),
+             (12, 'hidden_2', GREEN, 250, 300),
+             (13, 'hidden_3', GREEN, 250, 400),
+             (14, 'hidden_4', GREEN, 250, 500),
+             (15, 'hidden_5', GREEN, 250, 600),
+             (16, 'hidden_6', GREEN, 250, 700),
+             (17, 'hidden_7', GREEN, 250, 800),
+             (18, 'hidden_8', GREEN, 250, 900),
 
-             (11, 'hidden_1', GREEN, 250, 250),
-             (12, 'hidden_2', GREEN, 350, 250),
-             (13, 'hidden_3', GREEN, 450, 250),
-             (14, 'hidden_4', GREEN, 550, 250),
-
-             (15, 'out_ahead', RED, 300, 150),
-             (16, 'out_right', RED, 400, 150),
-             (17, 'out_left', RED, 500, 150)]
+             (19, 'out_ahead', RED, 450, 200),
+             (20, 'out_right', RED, 450, 550),
+             (21, 'out_left', RED, 450, 900)]
 
     def __init__(self, edges=None):
         self.high_score = 0
@@ -52,7 +55,7 @@ class Snake_net_visualiser:
             self.show_graph()
 
     def show_graph(self):
-        self.graph = Network(width=800, height=500, heading='Neural network', bgcolor='#000000', font_color='#ffffff')
+        self.graph = Network(width=500, height=1100, heading='Neural network', bgcolor='#000000', font_color='#ffffff')
         for node in self.nodes:
             self.graph.add_node(n_id=node[0], label=node[1], color=node[2], x=node[3], y=node[4],
                                 physics=False, labelHighlightBold=True, borderWidth=5)
@@ -90,7 +93,7 @@ class Snake_net_visualiser:
         contents.append(f'Generation number: {self.generation}\n'
                         f'High score: {self.high_score}\n'
                         f'Last gen average score: {self.last_average_score}\n'
-                        f'Ths gen average score: {self.average_score}')
+                        f'This gen average score: {self.average_score}')
         new_text.append(contents)
         soup.body.append(new_text)
 

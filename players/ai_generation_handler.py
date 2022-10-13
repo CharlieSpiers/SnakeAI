@@ -1,3 +1,5 @@
+import numpy as np
+
 from players.genetic_algorithm import Snake_genetic_net
 from players.network_file_parser import parse_edges_from_file, ParserException, EmptyEdgeListException
 import random as rnd
@@ -5,11 +7,12 @@ import random as rnd
 from visualisations.neural_graph_visualiser import Snake_net_visualiser
 from visualisations.paths import Default_network_file_path as Default_path
 
-SNAKES_PER_GENERATION = 10
-SNAKES_ON_HIGHER_VARIANCE = 4
+SNAKES_PER_GENERATION = 100
+SURVIVORS_PER_GENERATION = 10
 # bounds for how much the snake's network weights can change
-LOWER_MUTATION_VARIANCE_MAX = 0.2
-HIGHER_MUTATION_VARIANCE_MAX = 0.5
+BASE_MUTATION_VARIANCE = 0.4
+HIGHER_MUTATION_BOUND = 1.0
+LOWER_MUTATION_BOUND = 0.05
 
 
 class AI_generation_handler:
@@ -57,7 +60,6 @@ class AI_generation_handler:
             return edge_array
 
     def update_view_scores(self):
-        print(self.completed_snakes)
         gen_high_score = self.completed_snakes[0][1]
         if gen_high_score > self.high_score:
             self.high_score = gen_high_score
@@ -67,28 +69,32 @@ class AI_generation_handler:
         self.last_average_score = gen_average_score
 
     def create_new_generation(self):
-        first_snake = self.snakes[self.completed_snakes[0][0]]
-        second_snake = self.snakes[self.completed_snakes[1][0]]
+        survivor_snakes = []
+        survivor_scores = []
+        for i in range(SURVIVORS_PER_GENERATION):
+            survivor_snakes.append(self.snakes[self.completed_snakes[i][0]])
+            survivor_scores.append(self.completed_snakes[i][0])
 
         self.current_snake_index = 0
         self.completed_snakes = []
         self.snakes = []
+        variance_multiplier = (np.average(survivor_scores) + 100) / 100
+        variance = BASE_MUTATION_VARIANCE / variance_multiplier
+        np.clip(variance, LOWER_MUTATION_BOUND, HIGHER_MUTATION_BOUND)
 
-        for i in range(0, int((SNAKES_PER_GENERATION-SNAKES_ON_HIGHER_VARIANCE)/2)):
-            self.snakes.append(first_snake.generate_new_snake(LOWER_MUTATION_VARIANCE_MAX))
-            self.snakes.append(second_snake.generate_new_snake(LOWER_MUTATION_VARIANCE_MAX))
-
-        for i in range(0, int(SNAKES_ON_HIGHER_VARIANCE/2)):
-            self.snakes.append(first_snake.generate_new_snake(HIGHER_MUTATION_VARIANCE_MAX))
-            self.snakes.append(second_snake.generate_new_snake(HIGHER_MUTATION_VARIANCE_MAX))
+        for i in range(0, int(SNAKES_PER_GENERATION / SURVIVORS_PER_GENERATION)):
+            for survivor in range(SURVIVORS_PER_GENERATION):
+                self.snakes.append(survivor_snakes[survivor].generate_new_snake(variance))
 
     @staticmethod
     def get_random_weights():
         weights = []
-        for i in [0, 1, 2, 11, 12, 13, 14]:
-            for j in [15, 16, 17]:
+        # Input to hidden layer
+        for i in range(0, 11):
+            for j in range(11, 19):
                 weights.append((i, j, round(rnd.uniform(-1, 1), 3)))
-        for i in [3, 4, 5, 6, 7, 8, 9, 10]:
-            for j in [11, 12, 13, 14]:
+        # Hidden layer to output
+        for i in range(11, 19):
+            for j in range(19, 22):
                 weights.append((i, j, round(rnd.uniform(-1, 1), 3)))
         return weights
